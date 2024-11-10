@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">StoryAppDicoding</string>
+    <string name="story_image">Gambar Cerita</string>
+    <string name="welcome_story">Selamat datang di Dicoding Story</string>
+    <string name="intro_story">Bagikan semua cerita Anda di sini untuk berbagi pengalaman, perspektif, dan cerita hidup yang dapat menginspirasi orang lain. Tidak ada cerita yang terlalu kecil atau terlalu besar—setiap cerita memiliki nilai tersendiri. Bersama-sama, mari kita dengarkan, pahami, dan belajar dari perjalanan hidup masing-masing. Siap untuk berbagi cerita Anda?</string>
+    <string name="login">Masuk</string>
+    <string name="register">Daftar</string>
+    <string name="title_login">Siap untuk berbagi cerita Anda?</string>
+    <string name="intro_login">Silakan masukkan data Anda terlebih dahulu</string>
+    <string name="email">Email</string>
+    <string name="password">Kata Sandi</string>
+    <string name="name">Nama</string>
+    <string name="error">Kesalahan</string>
+    <string name="galery">Galeri</string>
+    <string name="camera">Kamera</string>
+    <string name="description">Deskripsi</string>
+    <string name="title_detail">Detail Judul</string>
+    <string name="upload">Unggah</string>
+    <string name="logout">Keluar</string>
+    <string name="logout_title">Konfirmasi Keluar</string>
+    <string name="logout_message">Apakah Anda yakin ingin keluar?</string>
+    <string name="sure">Iya</string>
+    <string name="cancel">Batal</string>
+</resources>

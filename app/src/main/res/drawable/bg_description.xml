@@ -1,0 +1,11 @@
+<!-- res/drawable/edittext_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" /> <!-- Ganti warna latar belakang sesuai keinginan -->
+    <corners android:radius="8dp" /> <!-- Sesuaikan radius untuk sudut persegi atau biarkan 0dp untuk sudut tajam -->
+    <stroke android:width="1dp" android:color="#BDBDBD" /> <!-- Warna dan ketebalan border -->
+    <padding
+        android:left="8dp"
+        android:top="8dp"
+        android:right="8dp"
+        android:bottom="8dp" />
+</shape>
