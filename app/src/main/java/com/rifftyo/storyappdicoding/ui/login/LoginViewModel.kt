@@ -24,4 +24,8 @@ class LoginViewModel(private val storyRepository: StoryRepository) : ViewModel()
             }
         }
     }
+
+    fun saveUserToken(token: String) {
+        storyRepository.saveUserToken(token)
+    }
 }

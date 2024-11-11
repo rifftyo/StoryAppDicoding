@@ -9,6 +9,7 @@ import com.rifftyo.storyappdicoding.data.remote.response.LoginResponse
 import com.rifftyo.storyappdicoding.data.remote.response.RegisterResponse
 import com.rifftyo.storyappdicoding.data.remote.response.StoryResponse
 import com.rifftyo.storyappdicoding.data.remote.response.UploadResponse
+import com.rifftyo.storyappdicoding.data.remote.retrofit.ApiConfig
 import com.rifftyo.storyappdicoding.data.remote.retrofit.ApiService
 import com.rifftyo.storyappdicoding.utils.UserPreferences
 import okhttp3.MultipartBody
@@ -16,7 +17,7 @@ import okhttp3.RequestBody
 import retrofit2.HttpException
 
 class StoryRepository private constructor(
-    private val apiService: ApiService,
+    private var apiService: ApiService,
     private val userPreferences: UserPreferences
 ){
     private val resultRegister = MediatorLiveData<Result<RegisterResponse>>()
@@ -46,10 +47,7 @@ class StoryRepository private constructor(
         try {
             resultLogin.value = Result.Loading
             val response = apiService.loginUser(email, password)
-            response.loginResult?.token?.let {
-                userPreferences.saveUserToken(it)
-                resultLogin.value = Result.Success(response)
-            }
+            resultLogin.value = Result.Success(response)
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             val errorResponse = Gson().fromJson(errorBody, LoginResponse::class.java)
@@ -94,8 +92,13 @@ class StoryRepository private constructor(
         return resultUpload
     }
 
-    suspend fun clearUserToken() {
+    fun clearUserToken() {
         userPreferences.clearUserToken()
+    }
+
+    fun saveUserToken(token: String) {
+        userPreferences.saveUserToken(token)
+        apiService = ApiConfig.getApiService(token)
     }
 
     suspend fun getStories(): LiveData<Result<StoryResponse>> {

@@ -5,12 +5,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.rifftyo.storyappdicoding.R
 import com.rifftyo.storyappdicoding.data.Result
@@ -33,6 +36,8 @@ class UploadActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
 
+    private var previousImageUri: Uri? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUploadBinding.inflate(layoutInflater)
@@ -46,6 +51,8 @@ class UploadActivity : AppCompatActivity() {
         setUpObserves()
         setUpListener()
 
+        binding.uploadButton.isEnabled = false
+
         supportActionBar?.hide()
     }
 
@@ -54,6 +61,7 @@ class UploadActivity : AppCompatActivity() {
             if (uri != null) {
                 binding.previewImage.setImageURI(uri)
             }
+            updateUploadButtonState()
         }
     }
 
@@ -61,6 +69,15 @@ class UploadActivity : AppCompatActivity() {
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.cameraButton.setOnClickListener { startCamera() }
         binding.uploadButton.setOnClickListener { uploadImage() }
+        binding.description.addTextChangedListener {
+            updateUploadButtonState()
+        }
+    }
+
+    private fun updateUploadButtonState() {
+        val isDescriptionNotEmpty = binding.description.text.toString().isNotEmpty()
+        val isImageSelected = viewModel.imageUri.value != null
+        binding.uploadButton.isEnabled = isDescriptionNotEmpty && isImageSelected
     }
 
     private fun startGallery() {
@@ -72,8 +89,9 @@ class UploadActivity : AppCompatActivity() {
     ) { uri: Uri? ->
         if (uri != null) {
             viewModel.setImageUri(uri)
+            previousImageUri = uri
         } else {
-            Log.d("Photo Picker", "No media selected")
+            Toast.makeText(this, getString(R.string.no_gallery), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -91,7 +109,11 @@ class UploadActivity : AppCompatActivity() {
                 binding.previewImage.setImageURI(uri)
             }
         } else {
-            Log.d("Camera", "Failed to take picture")
+            viewModel.setImageUri(previousImageUri)
+            if (previousImageUri == null) {
+                binding.previewImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_place_holder))
+            }
+            Toast.makeText(this, getString(R.string.no_image), Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -1,53 +1,36 @@
 package com.rifftyo.storyappdicoding.utils
 
 import android.content.Context
-import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
-
-class UserPreferences private constructor(private val dataStore: DataStore<Preferences>){
-
-    private val USER_TOKEN = stringPreferencesKey("user_token")
-
-    fun getUserToken(): Flow<String> {
-        Log.d("UserPreferences", "getUserToken called")
-        return dataStore.data.map { preferences ->
-            preferences[USER_TOKEN] ?: ""
-        }
-    }
-
-    suspend fun saveUserToken(token: String) {
-        Log.d("UserPreferences", "saveUserToken called with token: $token")
-        dataStore.edit { preferences ->
-            preferences[USER_TOKEN] = token
-        }
-    }
-
-    suspend fun clearUserToken() {
-        dataStore.edit { preferences ->
-            preferences.remove(USER_TOKEN)
-        }
-    }
+class UserPreferences private constructor(context: Context) {
 
     companion object {
+        private const val PREFS_NAME = "user_pref"
+        private const val USER_TOKEN = "user_token"
+
         @Volatile
         private var INSTANCE: UserPreferences? = null
 
-        fun getInstance(dataStore: DataStore<Preferences>): UserPreferences {
+        fun getInstance(context: Context): UserPreferences {
             return INSTANCE ?: synchronized(this) {
-                val instance = UserPreferences(dataStore)
+                val instance = UserPreferences(context)
                 INSTANCE = instance
                 instance
             }
         }
     }
 
+    private val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
+    fun saveUserToken(token: String) {
+        preferences.edit().putString(USER_TOKEN, token).apply()
+    }
+
+    fun getUserToken(): String {
+        return preferences.getString(USER_TOKEN, "") ?: ""
+    }
+
+    fun clearUserToken() {
+        preferences.edit().remove(USER_TOKEN).apply()
+    }
 }

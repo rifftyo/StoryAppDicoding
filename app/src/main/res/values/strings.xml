@@ -21,4 +21,6 @@
     <string name="logout_message">Are you sure you want to logout?</string>
     <string name="sure">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="no_image">No images are recorded</string>
+    <string name="no_gallery">No image selected</string>
 </resources>

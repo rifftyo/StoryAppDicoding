@@ -58,6 +58,10 @@ class LoginActivity : AppCompatActivity() {
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
+                    val token = result.data.loginResult?.token
+                    if (token != null) {
+                        viewModel.saveUserToken(token)
+                    }
                     val homeIntent = Intent(this, HomeActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                     }

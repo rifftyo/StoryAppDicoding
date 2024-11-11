@@ -21,4 +21,6 @@
     <string name="logout_message">Apakah Anda yakin ingin keluar?</string>
     <string name="sure">Iya</string>
     <string name="cancel">Batal</string>
+    <string name="no_image">Tidak ada gambar yang direkam</string>
+    <string name="no_gallery">Tidak ada gambar yang dipilih</string>
 </resources>

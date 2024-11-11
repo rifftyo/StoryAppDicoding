@@ -6,12 +6,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.rifftyo.storyappdicoding.R
 import com.rifftyo.storyappdicoding.ui.home.HomeActivity
 import com.rifftyo.storyappdicoding.utils.UserPreferences
-import com.rifftyo.storyappdicoding.utils.dataStore
-import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -27,25 +24,20 @@ class SplashActivity : AppCompatActivity() {
             insets
         }
 
-        userPreferences = UserPreferences.getInstance(dataStore)
+        userPreferences = UserPreferences.getInstance(this)
         checkLoginStatus()
 
         supportActionBar?.hide()
     }
 
     private fun checkLoginStatus() {
-        lifecycleScope.launch {
-            userPreferences.getUserToken().collect { token ->
-                if (token.isNotEmpty()) {
-                    val intentHome = Intent(this@SplashActivity, HomeActivity::class.java)
-                    startActivity(intentHome)
-                    finish()
-                } else {
-                    val intentLogin = Intent(this@SplashActivity, MainActivity::class.java)
-                    startActivity(intentLogin)
-                    finish()
-                }
-            }
+        val token = userPreferences.getUserToken()
+        if (token.isNotEmpty()) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 }
