@@ -20,7 +20,6 @@ import com.rifftyo.storyappdicoding.ui.home.HomeActivity
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private var toastShow = false
     private val viewModel: LoginViewModel by viewModels {
         ViewModelFactory.getInstance(this)
     }
@@ -47,38 +46,32 @@ class LoginActivity : AppCompatActivity() {
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 viewModel.loginUser(email, password)
             }
-        }
 
-        binding.btnLoginWelcome.isEnabled = false
-
-        viewModel.loginResult.observe(this) { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    val token = result.data.loginResult?.token
-                    if (token != null) {
-                        viewModel.saveUserToken(token)
+            viewModel.loginUser(email, password).observe(this) { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
                     }
-                    val homeIntent = Intent(this, HomeActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    is Result.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        val token = result.data.loginResult?.token
+                        if (token != null) {
+                            viewModel.saveUserToken(token)
+                        }
+                        val homeIntent = Intent(this, HomeActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                        startActivity(homeIntent)
                     }
-                    if (!toastShow) {
-                        toastShow = true
-                    }
-                    startActivity(homeIntent)
-                }
-                is Result.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    if (!toastShow) {
+                    is Result.Error -> {
+                        binding.progressBar.visibility = View.GONE
                         showDialog("Login Failed", result.error)
-                        toastShow = true
                     }
                 }
             }
         }
+
+        binding.btnLoginWelcome.isEnabled = false
 
         supportActionBar?.hide()
         playAnimation()

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -37,6 +39,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xopt-in=kotlin.RequiresOptIn")
+    }
+    testOptions {
+        animationsDisabled = true
     }
 }
 
@@ -59,7 +65,24 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation (libs.glide)
     implementation(libs.androidx.exifinterface)
+    implementation(libs.play.services.maps)
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.espresso.idling.resource)
+    implementation(libs.androidx.espresso.intents)
+    ksp(libs.room.compiler)
+
     testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.idling.concurrent)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

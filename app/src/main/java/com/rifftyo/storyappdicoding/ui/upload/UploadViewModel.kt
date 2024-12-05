@@ -16,5 +16,7 @@ class UploadViewModel(private val repository: StoryRepository): ViewModel() {
         _imageUri.value = uri
     }
 
-    suspend fun uploadStory(file: MultipartBody.Part, description: RequestBody) = repository.uploadStory(file, description)
+    fun uploadStory(file: MultipartBody.Part, description: RequestBody) = repository.uploadStory(file, description)
+
+    fun uploadStoryLocation(file: MultipartBody.Part, description: RequestBody, lat: Float, lon: Float) = repository.uploadStoryLocation(file, description, lat, lon)
 }

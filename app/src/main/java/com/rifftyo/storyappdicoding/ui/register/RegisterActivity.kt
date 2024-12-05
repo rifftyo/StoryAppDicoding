@@ -10,18 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
 import com.rifftyo.storyappdicoding.R
 import com.rifftyo.storyappdicoding.data.Result
 import com.rifftyo.storyappdicoding.databinding.ActivityRegisterBinding
 import com.rifftyo.storyappdicoding.ui.ViewModelFactory
 import com.rifftyo.storyappdicoding.ui.login.LoginActivity
-import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
-    private var toastShow = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,35 +44,34 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
 
-            binding.progressBar.visibility = View.VISIBLE
-
             if (user.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                lifecycleScope.launch {
-                    viewModel.registerUser(user, email, password).observe(this@RegisterActivity) {result ->
-                        if (result != null) {
-                            when (result) {
-                                is Result.Loading -> {
-                                    toastShow = false
-                                }
-                                is Result.Success -> {
-                                    binding.progressBar.visibility = View.GONE
-                                    if (!toastShow) {
-                                        toastShow = true
+                viewModel.registerUser(user, email, password).observe(this) { result ->
+                    if (result != null) {
+                        when (result) {
+                            is Result.Loading -> {
+                                binding.progressBar.visibility = View.VISIBLE
+                            }
+
+                            is Result.Success -> {
+                                binding.progressBar.visibility = View.GONE
+                                showDialog(
+                                    "Register Success",
+                                    "Your registration was successful!"
+                                ) {
+                                    val intentHome = Intent(
+                                        this,
+                                        LoginActivity::class.java
+                                    ).apply {
+                                        flags =
+                                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                                     }
-                                    showDialog("Register Success", "Your registration was successful!") {
-                                        val intentHome = Intent(this@RegisterActivity, LoginActivity::class.java).apply {
-                                            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                                        }
-                                        startActivity(intentHome)
-                                    }
+                                    startActivity(intentHome)
                                 }
-                                is Result.Error -> {
-                                    binding.progressBar.visibility = View.GONE
-                                    if (!toastShow) {
-                                        showDialog("Register Failed", result.error)
-                                        toastShow = true
-                                    }
-                                }
+                            }
+
+                            is Result.Error -> {
+                                binding.progressBar.visibility = View.GONE
+                                showDialog("Register Failed", result.error)
                             }
                         }
                     }
@@ -118,6 +114,7 @@ class RegisterActivity : AppCompatActivity() {
         val isPasswordValid = binding.passwordEditText.isPasswordValid
         val isEmailValid = binding.emailEditText.isEmailValid
 
-        binding.btnRegisterWelcome.isEnabled = user.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && isPasswordValid && isEmailValid
+        binding.btnRegisterWelcome.isEnabled =
+            user.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && isPasswordValid && isEmailValid
     }
 }

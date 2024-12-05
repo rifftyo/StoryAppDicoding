@@ -6,13 +6,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.rifftyo.storyappdicoding.R
 import com.rifftyo.storyappdicoding.data.Result
 import com.rifftyo.storyappdicoding.databinding.ActivityDetailBinding
 import com.rifftyo.storyappdicoding.ui.ViewModelFactory
-import kotlinx.coroutines.launch
 
 class DetailActivity : AppCompatActivity() {
 
@@ -48,27 +46,26 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun getDetailStory(id: String) {
-        lifecycleScope.launch {
-            viewModel.getDetailStory(id).observe(this@DetailActivity) { result ->
-                binding.progressBar.visibility = View.VISIBLE
-                when (result) {
-                    is Result.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
-                    is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        val detailStory = result.data.story
-                        Glide.with(this@DetailActivity)
-                            .load(detailStory?.photoUrl)
-                            .into(binding.imgDetail)
-                        binding.tvDetailTitle.text = detailStory?.name
-                        binding.tvDetailDescription.text = detailStory?.description
-                    }
-                    is Result.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.tvError.text = result.error
-                        binding.tvError.visibility = View.VISIBLE
-                    }
+        viewModel.getDetailStory(id).observe(this) { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    val detailStory = result.data.story
+                    Glide.with(this)
+                        .load(detailStory?.photoUrl)
+                        .into(binding.imgDetail)
+                    binding.tvDetailTitle.text = detailStory?.name
+                    binding.tvDetailDescription.text = detailStory?.description
+                }
+
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvError.text = result.error
+                    binding.tvError.visibility = View.VISIBLE
                 }
             }
         }

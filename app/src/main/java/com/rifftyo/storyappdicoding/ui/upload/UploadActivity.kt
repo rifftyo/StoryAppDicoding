@@ -14,7 +14,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
 import com.rifftyo.storyappdicoding.R
 import com.rifftyo.storyappdicoding.data.Result
 import com.rifftyo.storyappdicoding.databinding.ActivityUploadBinding
@@ -23,7 +22,6 @@ import com.rifftyo.storyappdicoding.ui.home.HomeActivity
 import com.rifftyo.storyappdicoding.utils.ImageHelper.getImageUri
 import com.rifftyo.storyappdicoding.utils.ImageHelper.reduceFileImage
 import com.rifftyo.storyappdicoding.utils.ImageHelper.uriToFile
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -111,7 +109,12 @@ class UploadActivity : AppCompatActivity() {
         } else {
             viewModel.setImageUri(previousImageUri)
             if (previousImageUri == null) {
-                binding.previewImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_place_holder))
+                binding.previewImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.upload_image
+                    )
+                )
             }
             Toast.makeText(this, getString(R.string.no_image), Toast.LENGTH_SHORT).show()
         }
@@ -132,20 +135,48 @@ class UploadActivity : AppCompatActivity() {
                     imageFile.name,
                     requestImageFile
                 )
+                val lat = intent.getDoubleExtra(LATITUDE, 0.0)
+                val lon = intent.getDoubleExtra(LONGITUDE, 0.0)
 
-                lifecycleScope.launch {
-                    viewModel.uploadStory(multipartBody, requestBody).observe(this@UploadActivity) { result ->
+                if (binding.switchLocation.isChecked) {
+                    viewModel.uploadStoryLocation(multipartBody, requestBody, lat.toFloat(), lon.toFloat()).observe(this) { result ->
                         when (result) {
                             is Result.Loading -> {
                                 binding.progressBar.visibility = View.VISIBLE
                             }
+
                             is Result.Success -> {
                                 binding.progressBar.visibility = View.GONE
-                                val intentBack = Intent(this@UploadActivity, HomeActivity::class.java).apply {
-                                    flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                                }
+                                val intentBack =
+                                    Intent(this@UploadActivity, HomeActivity::class.java).apply {
+                                        flags =
+                                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
                                 startActivity(intentBack)
                             }
+
+                            is Result.Error -> {
+                                binding.progressBar.visibility = View.GONE
+                            }
+                        }
+                    }
+                } else {
+                    viewModel.uploadStory(multipartBody, requestBody).observe(this) { result ->
+                        when (result) {
+                            is Result.Loading -> {
+                                binding.progressBar.visibility = View.VISIBLE
+                            }
+
+                            is Result.Success -> {
+                                binding.progressBar.visibility = View.GONE
+                                val intentBack =
+                                    Intent(this@UploadActivity, HomeActivity::class.java).apply {
+                                        flags =
+                                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+                                startActivity(intentBack)
+                            }
+
                             is Result.Error -> {
                                 binding.progressBar.visibility = View.GONE
                             }
@@ -154,5 +185,10 @@ class UploadActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val LATITUDE = "latitude"
+        const val LONGITUDE = "longitude"
     }
 }

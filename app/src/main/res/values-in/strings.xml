@@ -23,4 +23,5 @@
     <string name="cancel">Batal</string>
     <string name="no_image">Tidak ada gambar yang direkam</string>
     <string name="no_gallery">Tidak ada gambar yang dipilih</string>
+    <string name="retry">Coba lagi</string>
 </resources>

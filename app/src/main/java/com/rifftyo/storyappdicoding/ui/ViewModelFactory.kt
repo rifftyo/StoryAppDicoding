@@ -8,6 +8,7 @@ import com.rifftyo.storyappdicoding.di.Injection
 import com.rifftyo.storyappdicoding.ui.detail.DetailViewModel
 import com.rifftyo.storyappdicoding.ui.home.HomeViewModel
 import com.rifftyo.storyappdicoding.ui.login.LoginViewModel
+import com.rifftyo.storyappdicoding.ui.map.MapsViewModel
 import com.rifftyo.storyappdicoding.ui.register.RegisterViewModel
 import com.rifftyo.storyappdicoding.ui.upload.UploadViewModel
 
@@ -28,6 +29,9 @@ class ViewModelFactory private constructor(private val storyRepository: StoryRep
         }
         if (modelClass.isAssignableFrom(UploadViewModel::class.java)) {
             return UploadViewModel(storyRepository) as T
+        }
+        if (modelClass.isAssignableFrom(MapsViewModel::class.java)) {
+            return MapsViewModel(storyRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }

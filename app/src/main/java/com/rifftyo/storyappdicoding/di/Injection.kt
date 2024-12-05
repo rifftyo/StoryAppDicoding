@@ -3,6 +3,7 @@ package com.rifftyo.storyappdicoding.di
 import android.content.Context
 import android.util.Log
 import com.rifftyo.storyappdicoding.data.StoryRepository
+import com.rifftyo.storyappdicoding.data.local.StoryDatabase
 import com.rifftyo.storyappdicoding.data.remote.retrofit.ApiConfig
 import com.rifftyo.storyappdicoding.utils.UserPreferences
 
@@ -12,6 +13,7 @@ object Injection {
         val pref = UserPreferences.getInstance(context)
         val user = pref.getUserToken()
         val apiService = ApiConfig.getApiService(user)
-        return StoryRepository.getInstance(apiService, pref)
+        val storyDatabase = StoryDatabase.getDatabase(context)
+        return StoryRepository.getInstance(apiService, pref, storyDatabase)
     }
 }
